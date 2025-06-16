@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Shop Break-Even Calculator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+    }
+    .form-container, .result {
+      flex: 1;
+      width: 50%;
+      box-sizing: border-box;
+    }
+    .input-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    .result {
+      font-size: 1.2rem;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Break-Even Calculator</h1>
+
+    <div class="input-group">
+      <label for="margin">Margin on Product Sale (%)</label>
+      <input type="number" id="margin" value="40" oninput="calculate()" />
+    </div>
+
+    <div class="input-group">
+      <label for="ticket">Average Ticket (in €)</label>
+      <input type="number" id="ticket" value="30" oninput="calculate()" />
+    </div>
+
+    <div class="input-group">
+      <label for="rent">Monthly Rent Cost (in €)</label>
+      <input type="number" id="rent" value="2000" oninput="calculate()" />
+    </div>
+
+    <div class="input-group">
+      <label for="overhead">Monthly Overhead Costs (in €)</label>
+      <input type="number" id="overhead" value="500" oninput="calculate()" />
+    </div>
+
+    <div class="input-group">
+      <label for="numStaff">Number of Staff</label>
+      <input type="number" id="numStaff" value="2" oninput="calculate()" />
+    </div>
+
+    <div class="input-group">
+      <label for="salary">Monthly Salary per Staff (in €)</label>
+      <input type="number" id="salary" value="1800" oninput="calculate()" />
+    </div>
+
+    <div class="input-group">
+      <label for="salesVolume">Average Daily Ticket Sales</label>
+      <input type="number" id="salesVolume" value="0" oninput="calculate()" />
+    </div>
+  </div>
+
+  <div class="result" id="output"></div>
+
+  <script>
+    function calculate() {
+      const margin = parseFloat(document.getElementById('margin').value) / 100;
+      const ticket = parseFloat(document.getElementById('ticket').value);
+      const rent = parseFloat(document.getElementById('rent').value);
+      const overhead = parseFloat(document.getElementById('overhead').value);
+      const numStaff = parseInt(document.getElementById('numStaff').value);
+      const salary = parseFloat(document.getElementById('salary').value);
+      const dailySales = parseInt(document.getElementById('salesVolume').value);
+
+      if (isNaN(margin) || isNaN(ticket) || isNaN(rent) || isNaN(overhead) || isNaN(numStaff) || isNaN(salary) || isNaN(dailySales)) return;
+
+      const payroll = numStaff * salary;
+      const totalCosts = rent + payroll + overhead;
+      const taxRate = 0.125;
+
+      const requiredGrossRevenue = totalCosts / (margin * (1 - taxRate));
+      const ticketsToBreakEven = requiredGrossRevenue / ticket;
+      const dailyTicketsToBreakEven = ticketsToBreakEven / 30;
+
+      let result = `To break even, you need a gross revenue of: <strong>€${requiredGrossRevenue.toFixed(2)}</strong><br>`;
+      result += `You need to sell approximately <strong>${Math.ceil(ticketsToBreakEven)}</strong> tickets per month, or <strong>${Math.ceil(dailyTicketsToBreakEven)}</strong> tickets per day.<br><br>`;
+
+      result += `<u>Monthly Costs Breakdown:</u><br>`;
+      result += `Rent: €${rent.toFixed(2)}<br>`;
+      result += `Payroll (${numStaff} staff × €${salary.toFixed(2)}): €${payroll.toFixed(2)}<br>`;
+      result += `Overheads: €${overhead.toFixed(2)}<br>`;
+      result += `Total Monthly Costs: <strong>€${totalCosts.toFixed(2)}</strong><br><br>`;
+
+      if (dailySales > 0) {
+        const daysInMonth = 30;
+        const monthlyTickets = dailySales * daysInMonth;
+        const actualRevenue = ticket * monthlyTickets;
+        const profitBeforeTax = actualRevenue * margin - totalCosts;
+        const tax = profitBeforeTax > 0 ? profitBeforeTax * taxRate : 0;
+        const netProfit = profitBeforeTax - tax;
+
+        result += `At <strong>${dailySales}</strong> tickets sold per day:<br>`;
+        result += `Monthly Gross Revenue: €${actualRevenue.toFixed(2)}<br>`;
+        result += `Estimated Net Profit: <strong>€${netProfit.toFixed(2)}</strong>`;
+      }
+
+      document.getElementById('output').innerHTML = result;
+    }
+
+    // Run once at start
+    calculate();
+  </script>
+</body>
+</html>
