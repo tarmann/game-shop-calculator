@@ -118,9 +118,15 @@
         const tax = profitBeforeTax > 0 ? profitBeforeTax * taxRate : 0;
         const netProfit = profitBeforeTax - tax;
 
+        const yearlyGross = actualRevenue * 12;
+        const yearlyNet = netProfit * 12;
+
         result += `At <strong>${dailySales}</strong> tickets sold per day:<br>`;
         result += `Monthly Gross Revenue: €${actualRevenue.toFixed(2)}<br>`;
-        result += `Estimated Net Profit: <strong>€${netProfit.toFixed(2)}</strong>`;
+        result += `Estimated Net Profit: <strong>€${netProfit.toFixed(2)}</strong><br><br>`;
+        result += `<u>Yearly Projection:</u><br>`;
+        result += `Yearly Gross Revenue: €${yearlyGross.toFixed(2)}<br>`;
+        result += `Yearly Net Profit: <strong>€${yearlyNet.toFixed(2)}</strong>`;
       }
 
       document.getElementById('output').innerHTML = result;
