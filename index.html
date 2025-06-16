@@ -37,6 +37,9 @@
       padding: 1rem;
       border-radius: 8px;
     }
+    .negative {
+      color: red;
+    }
   </style>
 </head>
 <body>
@@ -82,6 +85,15 @@
   <div class="result" id="output"></div>
 
   <script>
+    function formatEUR(value) {
+      return value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatStyledEUR(value) {
+      const formatted = formatEUR(value);
+      return value < 0 ? `<span class="negative">€${formatted}</span>` : `€${formatted}`;
+    }
+
     function calculate() {
       const margin = parseFloat(document.getElementById('margin').value) / 100;
       const ticket = parseFloat(document.getElementById('ticket').value);
@@ -101,14 +113,14 @@
       const ticketsToBreakEven = requiredGrossRevenue / ticket;
       const dailyTicketsToBreakEven = ticketsToBreakEven / 30;
 
-      let result = `To break even, you need a gross revenue of: <strong>€${requiredGrossRevenue.toFixed(2)}</strong><br>`;
+      let result = `To break even, you need a gross revenue of: <strong>${formatStyledEUR(requiredGrossRevenue)}</strong><br>`;
       result += `You need to sell approximately <strong>${Math.ceil(ticketsToBreakEven)}</strong> tickets per month, or <strong>${Math.ceil(dailyTicketsToBreakEven)}</strong> tickets per day.<br><br>`;
 
       result += `<u>Monthly Costs Breakdown:</u><br>`;
-      result += `Rent: €${rent.toFixed(2)}<br>`;
-      result += `Payroll (${numStaff} staff × €${salary.toFixed(2)}): €${payroll.toFixed(2)}<br>`;
-      result += `Overheads: €${overhead.toFixed(2)}<br>`;
-      result += `Total Monthly Costs: <strong>€${totalCosts.toFixed(2)}</strong><br><br>`;
+      result += `Rent: ${formatStyledEUR(rent)}<br>`;
+      result += `Payroll (${numStaff} staff × ${formatStyledEUR(salary)}): ${formatStyledEUR(payroll)}<br>`;
+      result += `Overheads: ${formatStyledEUR(overhead)}<br>`;
+      result += `Total Monthly Costs: <strong>${formatStyledEUR(totalCosts)}</strong><br><br>`;
 
       if (dailySales > 0) {
         const daysInMonth = 30;
@@ -124,12 +136,12 @@
         const monthlyStockCost = actualRevenue * (1 - margin);
 
         result += `At <strong>${dailySales}</strong> tickets sold per day:<br>`;
-        result += `Monthly Gross Revenue: €${actualRevenue.toFixed(2)}<br>`;
-        result += `Estimated Net Profit: <strong>€${netProfit.toFixed(2)}</strong><br>`;
-        result += `Stock Purchase Cost (to support monthly sales): <strong>€${monthlyStockCost.toFixed(2)}</strong><br><br>`;
+        result += `Monthly Gross Revenue: ${formatStyledEUR(actualRevenue)}<br>`;
+        result += `Estimated Net Profit: <strong>${formatStyledEUR(netProfit)}</strong><br>`;
+        result += `Stock Purchase Cost (to support monthly sales): <strong>${formatStyledEUR(monthlyStockCost)}</strong><br><br>`;
         result += `<u>Yearly Projection:</u><br>`;
-        result += `Yearly Gross Revenue: €${yearlyGross.toFixed(2)}<br>`;
-        result += `Yearly Net Profit: <strong>€${yearlyNet.toFixed(2)}</strong>`;
+        result += `Yearly Gross Revenue: ${formatStyledEUR(yearlyGross)}<br>`;
+        result += `Yearly Net Profit: <strong>${formatStyledEUR(yearlyNet)}</strong>`;
       }
 
       document.getElementById('output').innerHTML = result;
