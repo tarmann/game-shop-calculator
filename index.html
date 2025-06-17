@@ -2,162 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Game Shop Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Shop Calculators</title>
   <style>
     body {
       font-family: sans-serif;
       padding: 2rem;
       background: #f4f4f4;
     }
-    .content {
-      display: flex;
-      gap: 2rem;
+    ul {
+      list-style: none;
+      padding: 0;
     }
-    .form-container {
-      flex: 0 0 35%;
+    li {
+      margin-bottom: 0.5rem;
     }
-    .result {
-      flex: 1;
-      background: #fff;
-      padding: 1rem;
-      border-radius: 8px;
-      font-size: 1.1rem;
-    }
-    .input-group {
-      margin-bottom: 1rem;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-    input {
-      width: 100%;
-      padding: 0.5rem;
-    }
-    .negative {
-      color: red;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2rem;
-      background: #fff;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.5rem;
-      text-align: right;
-    }
-    th {
-      background: #eee;
+    a {
+      color: #0366d6;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <h1>Game Shop Calculator</h1>
-  <div class="content">
-    <div class="form-container">
-      <div class="input-group"><label for="margin">Margin on Product Sale (%)</label><input id="margin" type="number" value="35" oninput="calculate()"/></div>
-      <div class="input-group"><label for="ticket">Average Ticket (in €)</label><input id="ticket" type="number" value="20" oninput="calculate()"/></div>
-      <div class="input-group"><label for="rent">Monthly Rent Cost (in €)</label><input id="rent" type="number" value="3000" oninput="calculate()"/></div>
-      <div class="input-group"><label for="overhead">Monthly Overhead Costs (in €)</label><input id="overhead" type="number" value="1000" oninput="calculate()"/></div>
-      <div class="input-group"><label for="numStaff">Number of Staff</label><input id="numStaff" type="number" value="1" oninput="calculate()"/></div>
-      <div class="input-group"><label for="salary">Monthly Salary per Staff (in €)</label><input id="salary" type="number" value="2300" oninput="calculate()"/></div>
-      <div class="input-group"><label for="salesVolume">Average Daily Ticket Sales</label><input id="salesVolume" type="number" value="20" oninput="calculate()"/></div>
-      <div class="input-group"><label for="growth">Projected Monthly Growth Rate (%)</label><input id="growth" type="number" value="0" oninput="calculate()"/></div>
-    </div>
-    <div class="result" id="output"></div>
-  </div>
-
-  <div id="projectionTable"></div>
-
-  <script>
-    function formatEUR(value) {
-      return value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
-    function formatStyledEUR(value) {
-      const formatted = formatEUR(value);
-      return value < 0 ? `<span class="negative">€${formatted}</span>` : `€${formatted}`;
-    }
-
-    function calculate() {
-      const margin = parseFloat(document.getElementById('margin').value) / 100;
-      const ticket = parseFloat(document.getElementById('ticket').value);
-      const rent = parseFloat(document.getElementById('rent').value);
-      const overhead = parseFloat(document.getElementById('overhead').value);
-      const numStaff = parseInt(document.getElementById('numStaff').value);
-      const salary = parseFloat(document.getElementById('salary').value);
-      const dailySales = parseInt(document.getElementById('salesVolume').value);
-      const growthRate = parseFloat(document.getElementById('growth').value) / 100;
-
-      if (isNaN(margin) || isNaN(ticket) || isNaN(rent) || isNaN(overhead) || isNaN(numStaff) || isNaN(salary) || isNaN(dailySales)) return;
-
-      const payroll = numStaff * salary;
-      const totalCosts = rent + payroll + overhead;
-      const taxRate = 0.125;
-
-      const requiredGrossRevenue = totalCosts / (margin * (1 - taxRate));
-      const ticketsToBreakEven = requiredGrossRevenue / ticket;
-      const dailyTicketsToBreakEven = ticketsToBreakEven / 30;
-
-      const daysInMonth = 30;
-      const monthlyTickets = dailySales * daysInMonth;
-      const baseRevenue = ticket * monthlyTickets;
-      const baseGrossProfit = baseRevenue * margin;
-      const baseProfitBeforeTax = baseGrossProfit - totalCosts;
-      const baseTax = baseProfitBeforeTax > 0 ? baseProfitBeforeTax * taxRate : 0;
-      const baseNetProfit = baseProfitBeforeTax - baseTax;
-      const yearlyGross = baseRevenue * 12;
-      const yearlyNet = baseNetProfit * 12;
-      const baseStockCost = baseRevenue * (1 - margin);
-
-      let result = `To break even, you need a gross revenue of: <strong>${formatStyledEUR(requiredGrossRevenue)}</strong><br>`;
-      result += `You need to sell approximately <strong>${Math.ceil(ticketsToBreakEven)}</strong> tickets per month, or <strong>${Math.ceil(dailyTicketsToBreakEven)}</strong> tickets per day.<br><br>`;
-      result += `<u>Monthly Costs Breakdown:</u><br>`;
-      result += `Rent: ${formatStyledEUR(rent)}<br>`;
-      result += `Payroll (${numStaff} staff × ${formatStyledEUR(salary)}): ${formatStyledEUR(payroll)}<br>`;
-      result += `Overheads: ${formatStyledEUR(overhead)}<br>`;
-      result += `Total Monthly Costs: <strong>${formatStyledEUR(totalCosts)}</strong><br><br>`;
-      result += `At <strong>${dailySales}</strong> tickets sold per day:<br>`;
-      result += `Monthly Gross Revenue: ${formatStyledEUR(baseRevenue)}<br>`;
-      result += `Gross Profit from Margin (before expenses & tax): <strong>${formatStyledEUR(baseGrossProfit)}</strong><br>`;
-      result += `Estimated Net Profit: <strong>${formatStyledEUR(baseNetProfit)}</strong><br>`;
-      result += `Stock Purchase Cost (to support monthly sales): <strong>${formatStyledEUR(baseStockCost)}</strong><br><br>`;
-      result += `<u>Yearly Projection:</u><br>`;
-      result += `Yearly Gross Revenue: ${formatStyledEUR(yearlyGross)}<br>`;
-      result += `Yearly Net Profit: <strong>${formatStyledEUR(yearlyNet)}</strong>`;
-
-      document.getElementById('output').innerHTML = result;
-
-      const initialStockRequired = baseStockCost * 2;
-
-      let table = `<p><strong>Initial Stock Required (2x Monthly Stock):</strong> €${formatEUR(initialStockRequired)}</p>`;
-      table += `<table><thead><tr><th>Month</th><th>Revenue</th><th>Net Profit</th><th>Loss</th><th>Stock Needed</th></tr></thead><tbody>`;
-
-      for (let month = 1; month <= 36; month++) {
-        const growthMultiplier = 1 + growthRate * (month - 1);
-        const revenue = baseRevenue * growthMultiplier;
-        const grossProfit = revenue * margin;
-        const profitBeforeTax = grossProfit - totalCosts;
-        const tax = profitBeforeTax > 0 ? profitBeforeTax * taxRate : 0;
-        const net = profitBeforeTax - tax;
-        const stock = revenue * (1 - margin);
-
-        const isLoss = net < 0;
-        const netFormatted = isLoss ? formatEUR(0) : formatEUR(net);
-        const lossFormatted = isLoss ? `<span class='negative'>${formatEUR(net)}</span>` : '-';
-
-        table += `<tr><td>Month ${month}</td><td>${formatEUR(revenue)}</td><td>${netFormatted}</td><td>${lossFormatted}</td><td>${formatEUR(stock)}</td></tr>`;
-      }
-
-      table += `</tbody></table>`;
-      document.getElementById('projectionTable').innerHTML = table;
-    }
-
-    calculate();
-  </script>
+  <h1>Game Shop Calculators</h1>
+  <ul>
+    <li><a href="game-shop-calculator.html">Main Shop Calculator</a></li>
+    <li><a href="event-calculator.html">Event Revenue Calculator</a></li>
+  </ul>
 </body>
 </html>
