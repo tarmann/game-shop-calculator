@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Revenue Calculator</title>
+  <style>
+    html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; }
+    label { display: block; margin-bottom: 10px; }
+    input { width: 100%; padding: 8px; margin-top: 4px; margin-bottom: 16px; }
+    .results { background-color: #f3f3f3; padding: 10px; border-radius: 4px; }
+    h1 { font-size: 1.5rem; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Event Revenue Calculator</h1>
+
+  <label>Margin on Sales (%):
+    <input type="number" id="margin" value="40">
+  </label>
+
+  <label>Average Ticket Price (€):
+    <input type="number" id="ticketPrice" value="15">
+  </label>
+
+  <label>Events per Month:
+    <input type="number" id="eventsPerMonth" value="20">
+  </label>
+
+  <label>Tickets per Event:
+    <input type="number" id="ticketsPerEvent" value="15">
+  </label>
+
+  <div class="results">
+    <p><strong>Gross Revenue:</strong> €<span id="grossRevenue">0.00</span></p>
+    <p><strong>Profit Before Costs:</strong> €<span id="profitBeforeCosts">0.00</span></p>
+  </div>
+
+  <script>
+    const marginInput = document.getElementById('margin');
+    const ticketPriceInput = document.getElementById('ticketPrice');
+    const eventsPerMonthInput = document.getElementById('eventsPerMonth');
+    const ticketsPerEventInput = document.getElementById('ticketsPerEvent');
+
+    const grossRevenueOutput = document.getElementById('grossRevenue');
+    const profitBeforeCostsOutput = document.getElementById('profitBeforeCosts');
+
+    function formatCurrency(cents) {
+      return (cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function calculateRevenue() {
+      const margin = parseInt(marginInput.value) || 0;
+      const ticketPriceCents = Math.round((parseFloat(ticketPriceInput.value) || 0) * 100);
+      const eventsPerMonth = parseInt(eventsPerMonthInput.value) || 0;
+      const ticketsPerEvent = parseInt(ticketsPerEventInput.value) || 0;
+
+      const grossRevenueCents = ticketPriceCents * ticketsPerEvent * eventsPerMonth;
+      const profitBeforeCostsCents = Math.round(grossRevenueCents * margin / 100);
+
+      grossRevenueOutput.textContent = formatCurrency(grossRevenueCents);
+      profitBeforeCostsOutput.textContent = formatCurrency(profitBeforeCostsCents);
+    }
+
+    marginInput.addEventListener('input', calculateRevenue);
+    ticketPriceInput.addEventListener('input', calculateRevenue);
+    eventsPerMonthInput.addEventListener('input', calculateRevenue);
+    ticketsPerEventInput.addEventListener('input', calculateRevenue);
+
+    // Initial calculation
+    calculateRevenue();
+  </script>
+</body>
+</html>
